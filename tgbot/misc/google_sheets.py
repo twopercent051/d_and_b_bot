@@ -14,7 +14,7 @@ class GoogleSheets:
         credentials = service_account.Credentials.from_service_account_file(secret_file, scopes=scopes)
         service = discovery.build('sheets', 'v4', credentials=credentials)
 
-        range_name = f'{sheet_name}!A1:D2'
+        range_name = f'{sheet_name}!A1:J{len(requests_list) + 1}'
 
         values = [
             [
