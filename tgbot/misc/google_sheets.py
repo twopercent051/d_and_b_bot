@@ -39,11 +39,11 @@ class GoogleSheets:
                     request['phone'],
                     request['type_request'],
                     request['add_datetime'].strftime('%d-%m-%Y %H:%M'),
-                    request['property_type'],
-                    request['target'],
-                    request['stage_building'],
-                    request['price'],
-                    request['time_to_call']
+                    request['property_type'] if request['property_type'] else '---',
+                    request['target'] if request['target'] else '---',
+                    request['stage_building'] if request['stage_building'] else '---',
+                    request['price'] if request['price'] else '---',
+                    request['time_to_call'] if request['time_to_call'] else '---'
                 ]
             )
 
