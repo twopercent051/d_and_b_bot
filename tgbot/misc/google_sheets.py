@@ -38,7 +38,7 @@ class GoogleSheets:
                     request['name'],
                     request['phone'],
                     request['type_request'],
-                    request['add_datetime'],
+                    request['add_datetime'].strftime('%d-%m-%Y %H:%M'),
                     request['property_type'],
                     request['target'],
                     request['stage_building'],
