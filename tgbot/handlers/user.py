@@ -113,7 +113,8 @@ async def get_contact(message: Message, state: FSMContext):
             await state.set_state(UserFSM.time_to_call)
     else:
         text = 'Нажмите пожалуйста кнопку Оставить телефон'
-        await message.answer(text)
+        kb = reply_kb.phone_keyboard()
+        await message.answer(text, reply_markup=kb)
 
 
 @router.callback_query(F.data.split(':')[0] == 'pick_up')
