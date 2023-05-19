@@ -6,6 +6,7 @@ from aiogram.fsm.context import FSMContext
 from create_bot import bot, admin_group
 from tgbot.keyboards.inline import UserInlineKeyboard as inline_kb
 from tgbot.keyboards.reply import UserReplyKeyboard as reply_kb
+from tgbot.misc.google_sheets import GoogleSheets
 from tgbot.misc.states import UserFSM
 from tgbot.models.redis_connector import RedisConnector
 from tgbot.models.sql_connector import DBRequestsDAO
@@ -32,9 +33,9 @@ async def admin_start_clb(callback: CallbackQuery, state: FSMContext):
     await bot.answer_callback_query(callback.id)
 
 
-@router.callback_query(F.data == 'catalog', UserFSM.home)
-@router.callback_query(F.data == 'pick_up', UserFSM.home)
-@router.callback_query(F.data == 'phone_advice', UserFSM.home)
+@router.callback_query(F.data == 'catalog')
+@router.callback_query(F.data == 'pick_up')
+@router.callback_query(F.data == 'phone_advice')
 async def get_name(callback: CallbackQuery, state: FSMContext):
     """Запрос имени"""
     chapter = callback.data
@@ -75,12 +76,13 @@ async def get_contact(message: Message, state: FSMContext):
             text = 'Спасибо. Вот каталог недвижимости'  # Возможно отредактировать
             await bot.send_document(chat_id=user_id, document=catalog_id, caption=text,
                                     reply_markup=ReplyKeyboardRemove())
-            await DBRequestsDAO.create(
+            new_requests_list = await DBRequestsDAO.create(
                 user_id=user_id,
                 name=state_data['name'],
                 phone=message.contact.phone_number,
                 type_request='Каталог недвижимости'
             )
+            await GoogleSheets.google_update(new_requests_list)
             await state.set_state(UserFSM.home)
         elif chapter == 'pick_up':
             text = 'Спасибо. Наш менеджер свяжется с вами в ближайшее время'  # Возможно отредактировать
@@ -93,7 +95,7 @@ async def get_contact(message: Message, state: FSMContext):
                 f"Этап строительства: <i>{state_data['stage_building']}</i>",
                 f"Цена: <i>{state_data['price']}</i>",
             ]
-            await DBRequestsDAO.create(
+            new_requests_list = await DBRequestsDAO.create(
                 user_id=user_id,
                 name=state_data['name'],
                 phone=message.contact.phone_number,
@@ -103,6 +105,7 @@ async def get_contact(message: Message, state: FSMContext):
                 stage_building=state_data['stage_building'],
                 price=state_data['price']
             )
+            await GoogleSheets.google_update(new_requests_list)
             await message.answer(text, reply_markup=ReplyKeyboardRemove())
             await bot.send_message(admin_group, '\n'.join(admin_text), reply_markup=inline_kb.home_kb())
             await state.set_state(UserFSM.home)
@@ -152,12 +155,13 @@ async def get_time_to_call(message: Message, state: FSMContext):
         f"Телефон: <i>{state_data['phone']}</i>",
         f"Время для звонка: <i>{message.text}</i>",
     ]
-    await DBRequestsDAO.create(
+    new_requests_list = await DBRequestsDAO.create(
         user_id=user_id,
         name=state_data['name'],
         phone=state_data['phone'],
         type_request='Консультация по телефону',
         time_to_call=message.text
     )
+    await GoogleSheets.google_update(new_requests_list)
     await message.answer(text)
     await bot.send_message(admin_group, '\n'.join(admin_text), reply_markup=inline_kb.home_kb())

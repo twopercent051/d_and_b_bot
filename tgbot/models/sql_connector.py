@@ -46,6 +46,9 @@ class DBRequestsDAO(DBRequests):
             stmt = insert(DBRequests).values(**data)
             await session.execute(stmt)
             await session.commit()
+            query = select(DBRequests.__table__.columns).order_by(DBRequests.add_datetime.desc())
+            result = await session.execute(query)
+            return result.mappings().all()
 
     @classmethod
     async def get_all(cls, limit: Optional[int] = None) -> list:

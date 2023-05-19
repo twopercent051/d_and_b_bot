@@ -1,4 +1,6 @@
 import logging
+import os
+
 import redis
 import betterlogging as bl
 
@@ -24,6 +26,10 @@ log_level = logging.INFO
 bl.basic_colorized_config(level=log_level)
 
 admin_group = config.misc.admin_group
+
+secret_file = os.path.join(os.getcwd(), config.google.secret_file)
+spreadsheet_id = config.google.spreadsheet_id
+sheet_name = config.google.sheet_name
 
 
 def register_global_middlewares(dp: Dispatcher, config):

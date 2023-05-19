@@ -31,11 +31,19 @@ class Miscellaneous:
 
 
 @dataclass
+class GoogleSheets:
+    secret_file: str
+    spreadsheet_id: str
+    sheet_name: str
+
+
+@dataclass
 class Config:
     tg_bot: TgBot
     db: DbConfig
     rds: RedisConfig
     misc: Miscellaneous
+    google: GoogleSheets
 
 
 def load_config(path: str = None):
@@ -61,5 +69,10 @@ def load_config(path: str = None):
         ),
         misc=Miscellaneous(
             admin_group=env.str('ADMIN_GROUP')
+        ),
+        google=GoogleSheets(
+            secret_file=env.str('SECRET_FILE'),
+            spreadsheet_id=env.str('SPREADSHEET_ID'),
+            sheet_name=env.str('SHEET_NAME')
         )
     )
