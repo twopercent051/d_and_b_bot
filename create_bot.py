@@ -11,6 +11,7 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
 from tgbot.config import load_config
 from tgbot.middlewares.config import ConfigMiddleware
+# from tgbot.misc.google_sheets import GoogleSheets
 
 config = load_config(".env")
 r = redis.Redis(host=config.rds.host, port=config.rds.port, db=config.rds.db)
@@ -26,6 +27,8 @@ log_level = logging.INFO
 bl.basic_colorized_config(level=log_level)
 
 admin_group = config.misc.admin_group
+
+# google_sheet = GoogleSheets()
 
 secret_file = os.path.join(os.getcwd(), config.google.secret_file)
 spreadsheet_id = config.google.spreadsheet_id

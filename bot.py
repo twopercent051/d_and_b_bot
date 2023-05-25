@@ -3,6 +3,7 @@ import asyncio
 from tgbot.handlers.admin import router as admin_router
 from tgbot.handlers.user import router as user_router
 from tgbot.handlers.echo import router as echo_router
+from tgbot.misc.google_sheets import GoogleSheets
 from tgbot.misc.scheduler import scheduler_jobs
 from tgbot.models.redis_connector import RedisConnector as rds
 

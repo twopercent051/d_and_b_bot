@@ -6,14 +6,14 @@ from create_bot import secret_file, spreadsheet_id, sheet_name
 
 class GoogleSheets:
 
-    @classmethod
-    async def google_update(cls, requests_list: list):
-        scopes = ["https://www.googleapis.com/auth/drive", "https://www.googleapis.com/auth/drive.file",
-                  "https://www.googleapis.com/auth/spreadsheets"]
+    def __init__(self):
+        self.scopes = ["https://www.googleapis.com/auth/drive", "https://www.googleapis.com/auth/drive.file",
+                       "https://www.googleapis.com/auth/spreadsheets"]
 
-        credentials = service_account.Credentials.from_service_account_file(secret_file, scopes=scopes)
-        service = discovery.build('sheets', 'v4', credentials=credentials)
+        self.credentials = service_account.Credentials.from_service_account_file(secret_file, scopes=self.scopes)
+        self.service = discovery.build('sheets', 'v4', credentials=self.credentials)
 
+    async def google_update(self, requests_list: list):
         range_name = f'{sheet_name}!A1:J{len(requests_list) + 1}'
 
         values = [
@@ -52,5 +52,8 @@ class GoogleSheets:
             'values': values
         }
 
-        service.spreadsheets().values().update(spreadsheetId=spreadsheet_id, body=data, range=range_name,
-                                               valueInputOption='USER_ENTERED').execute()
+        self.service.spreadsheets().values().update(spreadsheetId=spreadsheet_id, body=data, range=range_name,
+                                                    valueInputOption='USER_ENTERED').execute()
+
+
+google_sheet = GoogleSheets()

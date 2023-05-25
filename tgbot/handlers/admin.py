@@ -1,5 +1,6 @@
 import os
 
+from aiogram.exceptions import TelegramBadRequest
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, CallbackQuery, FSInputFile
 from aiogram.filters import CommandStart, Command
@@ -44,8 +45,12 @@ async def keywords_list(callback: CallbackQuery, state: FSMContext):
     catalog_id = await RedisConnector.get_catalog()
     kb = inline_kb.home_kb()
     if catalog_id:
-        text = 'Сейчас основной каталог такой. Чтобы его заменить отправьте новый каталог ответным сообщением'
-        await bot.send_document(chat_id=admin_group, document=catalog_id, caption=text, reply_markup=kb)
+        try:
+            text = 'Сейчас основной каталог такой. Чтобы его заменить отправьте новый каталог ответным сообщением'
+            await bot.send_document(chat_id=admin_group, document=catalog_id, caption=text, reply_markup=kb)
+        except TelegramBadRequest:
+            text = 'Сейчас не задан каталог. Отправьте PDF-файл ответным сообщением'
+            await callback.message.answer(text, reply_markup=kb)
     else:
         text = 'Сейчас не задан каталог. Отправьте PDF-файл ответным сообщением'
         await callback.message.answer(text, reply_markup=kb)
